@@ -1,0 +1,7 @@
+*.orig
+*.dll
+*.userprefs
+ExceptionDetector/bin/*
+ExceptionDetector/obj/*
+*.suo
+*.csproj.user
