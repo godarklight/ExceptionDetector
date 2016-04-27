@@ -17,24 +17,29 @@ namespace ExceptionDetector
         private Dictionary<string, Dictionary<StackInfo,int>> methodThrows = new Dictionary<string, Dictionary<StackInfo, int>>();
         //Time of all the throws
         private Queue<float> throwTime = new Queue<float>();
-        //===Default method callback===
-        private static Application.LogCallback stockDebug;
         //===Display state===
         private float lastDisplayTime = float.NegativeInfinity;
         private string displayState;
         private Rect windowRect = new Rect(10, 10, 400, 50);
         private GUILayoutOption[] expandOptions = null;
+        private HashSet<string> kspDlls = new HashSet<string>();
+        private HashSet<string> unityDlls = new HashSet<string>();
 
         public void Awake()
         {
             DontDestroyOnLoad(this);
-            Debug.Log("Hijacking the KSP logging utility!");
-            stockDebug = (Application.LogCallback)typeof(Application).GetField("s_LogCallback", BindingFlags.Static | BindingFlags.NonPublic).GetValue(null);
-            Application.RegisterLogCallback(HandleLogEntry);
-            Debug.Log("Hijack finished!");
-            expandOptions = new GUILayoutOption[2];
+            Application.logMessageReceived += HandleLogEntry;
+            GUILayoutOption[] expandOptions = new GUILayoutOption[2];
             expandOptions[0] = GUILayout.ExpandWidth(true);
             expandOptions[1] = GUILayout.ExpandHeight(true);
+            kspDlls.Add("assembly-csharp-firstpass");
+            kspDlls.Add("assembly-csharp");
+            kspDlls.Add("kspassets.dll");
+            kspDlls.Add("kspcore.dll");
+            kspDlls.Add("ksputil.dll");
+            unityDlls.Add("unityengine.dll");
+            unityDlls.Add("unityengine.networking.dll");
+            unityDlls.Add("unityengine.ui.dll");
         }
 
         private void UpdateDisplayString()
@@ -141,7 +146,6 @@ namespace ExceptionDetector
                 }
                 throwTime.Enqueue(Time.realtimeSinceStartup);
             }
-            stockDebug(condition, stackTrace, logType);
         }
 
         public StackInfo GetStackInfo(string stackLine)
@@ -188,11 +192,11 @@ namespace ExceptionDetector
                     {
                         retVal.dllName = "Mono";
                     }
-                    if (retVal.dllName.ToLower() == "unityengine")
+                    if (unityDlls.Contains(retVal.dllName.ToLower()))
                     {
                         retVal.dllName = "Unity";
                     }
-                    if (retVal.dllName.ToLower() == "assembly-csharp" || retVal.dllName == "assembly-csharp-firstpass")
+                    if (kspDlls.Contains(retVal.dllName.ToLower()))
                     {
                         retVal.dllName = "KSP";
                     }
