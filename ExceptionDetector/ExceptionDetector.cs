@@ -25,6 +25,8 @@ namespace ExceptionDetector
         private HashSet<string> kspDlls = new HashSet<string>();
         private HashSet<string> unityDlls = new HashSet<string>();
 
+//		static private UICLASS uiVisiblity;
+
         public void Awake()
         {
             DontDestroyOnLoad(this);
@@ -40,6 +42,9 @@ namespace ExceptionDetector
             unityDlls.Add("unityengine.dll");
             unityDlls.Add("unityengine.networking.dll");
             unityDlls.Add("unityengine.ui.dll");
+
+//			uiVisiblity = new UICLASS ();
+//			uiVisiblity.Awake ();
         }
 
         private void UpdateDisplayString()
@@ -85,6 +90,16 @@ namespace ExceptionDetector
             }
         }
 
+		bool isVisible = true;
+
+		void Update()
+		{
+			if ((Input.GetKey (KeyCode.RightControl) || Input.GetKey (KeyCode.LeftControl)) &&
+				Input.GetKeyDown (KeyCode.F2)) {
+				isVisible = !isVisible;
+
+			}
+		}
         public void OnGUI()
         {
             //Update the state string every 0.2s so we can read it.
@@ -95,7 +110,8 @@ namespace ExceptionDetector
             if (displayState != null)
             {
                 //Random number
-                windowRect = GUILayout.Window(1660952404, windowRect, DrawMethod, "Exception Detector", expandOptions);
+				if (isVisible)
+	                windowRect = GUILayout.Window(1660952404, windowRect, DrawMethod, "Exception Detector", expandOptions);
             }
         }
 
