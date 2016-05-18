@@ -95,7 +95,7 @@ namespace ExceptionDetector
 		void Update()
 		{
 			if ((Input.GetKey (KeyCode.RightControl) || Input.GetKey (KeyCode.LeftControl)) &&
-				Input.GetKeyDown (KeyCode.F5)) {
+				Input.GetKeyDown (KeyCode.F2)) {
 				isVisible = !isVisible;
 
 			}
