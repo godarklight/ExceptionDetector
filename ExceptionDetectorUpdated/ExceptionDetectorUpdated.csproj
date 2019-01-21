@@ -3,7 +3,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{1074C8AF-C3A2-440E-A827-F06B5F51764C}</ProjectGuid>
+    <ProjectGuid>{4058D446-E39E-4183-AD88-7EDD83FD6DEC}</ProjectGuid>
     <OutputType>Library</OutputType>
     <RootNamespace>ExceptionDetectorUpdated</RootNamespace>
     <AssemblyName>ExceptionDetectorUpdated</AssemblyName>
