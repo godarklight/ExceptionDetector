@@ -6,6 +6,7 @@
 *.userprefs
 src/ExceptionDetectorUpdated/bin
 src/ExceptionDetectorUpdated/obj
+GameData/Log
 Release/
 *.suo
 *.csproj.user
