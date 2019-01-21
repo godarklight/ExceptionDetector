@@ -1,8 +1,8 @@
 {
      "NAME":"ExceptionDetectorUpdated",
-	 "URL":"https://raw.githubusercontent.com/SlimJimDodger/ExceptionDetectorUpdated/master/GameData/ExceptionDetectorUpdated/ExceptionDetectorUpdated.version",
+	 "URL":"https://https://raw.githubusercontent.com/SlimJimDodger/ExceptionDetectorUpdated/master/GameData/ExceptionDetectorUpdated/ExceptionDetectorUpdated.version",
 	 "DOWNLOAD":"https://github.com/SlimJimDodger/ExceptionDetectorUpdated/releases",
-     "CHANGE_LOG_URL":"https://raw.githubusercontent.com/SlimJimDodger/ExceptionDetectorUpdated/CHANGES",
+     "CHANGE_LOG_URL":"https://raw.githubusercontent.com/SlimJimDodger/ExceptionDetectorUpdated/master/src/CHANGES.txt",
      "GITHUB":{
          "USERNAME":"SlimJimDodger",
          "REPOSITORY":"ExceptionDetectorUpdated",
