@@ -3,6 +3,7 @@
 *.userprefs
 src/ExceptionDetectorUpdated/bin/*
 src/ExceptionDetectorUpdated/obj/*
+Release/
 *.suo
 *.csproj.user
 src/.vs
