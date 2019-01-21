@@ -41,6 +41,7 @@
   <ItemGroup>
     <Compile Include="Config.cs" />
     <Compile Include="ExceptionDetector.cs" />
+    <Compile Include="GUI\IssueGUI.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ExceptionDetectorUpdated.version" />

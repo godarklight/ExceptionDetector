@@ -10,6 +10,7 @@ namespace ExceptionDetectorUpdated
 	[KSPAddon(KSPAddon.Startup.Instantly, true)]
 	public class ExceptionDetectorUpdated : MonoBehaviour
 	{
+		#region needscleaned
 		//===Exception storage===
 		//Key: Class name, Value: StackInfo
 		private static Dictionary<string, StackInfo> classCache = new Dictionary<string, StackInfo>();
@@ -38,10 +39,14 @@ namespace ExceptionDetectorUpdated
 		private static readonly string _assemblyPath = Path.GetDirectoryName(typeof(ExceptionDetectorUpdated).Assembly.Location);
 		internal static String SettingsFile { get; } = Path.Combine(_assemblyPath, "settings.cfg");
 		internal static String LogFile { get; } = Path.Combine(_assemblyPath, "Log/edu.log");
+		private IssueGUI fiGui;
+		#endregion
 
+		#region Properties
 		public static bool FullLog { get; set; } = false;
 		public static bool HideKnowns { get; set; } = false;
 		public static bool ShowInfoMessage { get; set; } = false;
+		#endregion
 
 		public void Awake()
 		{
@@ -60,6 +65,26 @@ namespace ExceptionDetectorUpdated
 			unityDlls.Add("unityengine.dll");
 			unityDlls.Add("unityengine.networking.dll");
 			unityDlls.Add("unityengine.ui.dll");
+		}
+
+		public void OnDestroy()
+		{
+			try
+			{
+				if (fiGui != null)
+				{
+					Destroy(fiGui);
+				}
+			}
+			catch (Exception ex)
+			{
+				WriteLog(ex.ToString());
+			}
+		}
+
+		protected void Start()
+		{
+			fiGui = gameObject.AddComponent<IssueGUI>();
 		}
 
 		private void UpdateDisplayString()
@@ -390,7 +415,7 @@ namespace ExceptionDetectorUpdated
 			}
 		}
 
-		private void InitLog()
+		private static void InitLog()
 		{
 			FileStream objFilestream = new FileStream(ExceptionDetectorUpdated.LogFile, FileMode.Create, FileAccess.Write);
 			StreamWriter objStreamWriter = new StreamWriter((Stream)objFilestream);

@@ -1,5 +1,8 @@
 *.orig
 *.dll
+*.zip
+*.mdb
+*.pdb
 *.userprefs
 src/ExceptionDetectorUpdated/bin
 src/ExceptionDetectorUpdated/obj
