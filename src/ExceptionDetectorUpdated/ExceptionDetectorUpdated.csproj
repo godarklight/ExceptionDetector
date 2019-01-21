@@ -31,13 +31,11 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Assembly-CSharp">
-      <HintPath>..\..\..\..\..\..\..\Steam\steamapps\common\Kerbal Space Program\KSP_x64_Data\Managed\Assembly-CSharp.dll</HintPath>
-      <Private>False</Private>
+      <HintPath>..\..\..\..\..\..\..\..\Steam\steamapps\common\Kerbal Space Program\KSP_x64_Data\Managed\Assembly-CSharp.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="UnityEngine">
-      <HintPath>..\..\..\..\..\..\..\Steam\steamapps\common\Kerbal Space Program\KSP_x64_Data\Managed\UnityEngine.dll</HintPath>
-      <Private>False</Private>
+      <HintPath>..\..\..\..\..\..\..\..\Steam\steamapps\common\Kerbal Space Program\KSP_x64_Data\Managed\UnityEngine.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -55,7 +53,13 @@
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>$(ProjectDir)..\..\pdb2mdb\pdb2mdb.exe $(TargetPath)
-copy /y $(TargetDir)ExceptionDetector* $(ProjectDir)..\..\GameData\ExceptionDetector\</PostBuildEvent>
+    <PostBuildEvent>$(ProjectDir)..\..\..\pdb2mdb\pdb2mdb.exe $(TargetPath)
+copy /y $(TargetDir)ExceptionDetector* $(ProjectDir)..\..\..\GameData\ExceptionDetectorUpdated\
+
+copy /y $(ProjectDir)settings.cfg $(ProjectDir)..\..\..\GameData\ExceptionDetectorUpdated\
+copy /y $(ProjectDir)..\LICENSE.md $(ProjectDir)..\..\..\GameData\ExceptionDetectorUpdated\
+copy /y $(ProjectDir)..\UNLICENSE $(ProjectDir)..\..\..\GameData\ExceptionDetectorUpdated\
+copy /y $(ProjectDir)..\README.md $(ProjectDir)..\..\..\GameData\ExceptionDetectorUpdated\
+copy /y $(ProjectDir)..\CHANGES.txt $(ProjectDir)..\..\..\GameData\ExceptionDetectorUpdated\</PostBuildEvent>
   </PropertyGroup>
 </Project>
