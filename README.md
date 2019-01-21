@@ -1,3 +1,3 @@
-Place Assembly-CSharp/UnityEngine into the folder with the solution and build with VS/Monodevelop/msbuild/xbuild.
+Mod lives in GameData/ExceptionDetectorUpdated
 
-Copy ExceptionDetector.dll to your GameData folder to use.
+An interesting log file lives at GameData/ExceptionDetectorUpdated/Logs
