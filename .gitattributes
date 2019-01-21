@@ -1,4 +1,4 @@
 * text=auto
-*.csproj text eol=crlf
-*.sln text eol=crlf
+*.csproj text eol=lf
+*.sln text eol=lf
 *.cs     diff=csharp

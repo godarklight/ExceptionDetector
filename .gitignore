@@ -6,3 +6,4 @@ ExceptionDetector/obj/*
 ExceptionDetectorUpdated/obj
 *.suo
 *.csproj.user
+.vs
