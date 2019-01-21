@@ -3,5 +3,6 @@
 *.userprefs
 ExceptionDetector/bin/*
 ExceptionDetector/obj/*
+ExceptionDetectorUpdated/obj
 *.suo
 *.csproj.user
