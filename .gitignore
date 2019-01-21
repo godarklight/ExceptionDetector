@@ -1,9 +1,9 @@
 *.orig
 *.dll
 *.userprefs
-ExceptionDetectorUpdated/bin/*
-ExceptionDetectorUpdated/obj/*
+src/ExceptionDetectorUpdated/bin/*
+src/ExceptionDetectorUpdated/obj/*
 *.suo
 *.csproj.user
-.vs
+src/.vs
 
