@@ -29,20 +29,6 @@ namespace ExceptionDetectorUpdated
 		private static int stackLogTick = 0;
 		private static string preStack = String.Empty;
 
-		//private static readonly String PARTLOADER = "PartLoader:";
-		//private static readonly String TEXTURELOADER = "Load(Texture):";
-		//private static readonly String MODELLOADER = "Load(Model):";
-		//private static readonly String AUDIOLOADER = "Load(Audio):";
-		//private static readonly String MODMAN = "[MODULEMANAGER]";
-		//private static readonly String TOOLBAR = "ToolbarControl:";
-		//private static readonly String CONTRACTTYPE = "ContractConfigurator.ContractType:";
-		//private static readonly String CONTRACTCONFIGTYPE = "ContractConfigurator.ContractConfigurator:";
-		//private static readonly String CONTRACTGROUPTYPE = "ContractConfigurator.ContractGroup:";
-		//private static readonly String CONTRACTAGENTTYPE = "[Agent]:";
-		//private static readonly String CONTRACTORBITTYPE = "ContractConfigurator.OrbitFactory:";
-		//private static readonly String KOSTYPE = "kOS:";
-		//private static readonly String FILTEREXTTYPE = "[Filter Extensions 3.2.0.3]:";
-
 		internal static Dictionary<string, string> SinglePassValues = new Dictionary<string, string>();
 		internal static Dictionary<string, string> DoublePassValues = new Dictionary<string, string>();
 		private static Dictionary<string, HashSet<string>> _errors = new Dictionary<string, HashSet<string>>();
@@ -157,13 +143,6 @@ namespace ExceptionDetectorUpdated
 
 		public static void HandleLogEntry(string condition, string stackTrace, LogType logType)
 		{
-			//bool texType = condition.Contains(TEXTURELOADER);
-			//bool parType = condition.Contains(PARTLOADER);
-			//bool modType = condition.Contains(MODELLOADER);
-			//bool auType = condition.Contains(AUDIOLOADER);
-			//bool mmType = condition.Contains(MODMAN);
-			//bool toolType = condition.Contains(TOOLBAR);
-			//bool contractType = condition.Contains(CONTRACTTYPE);
 
 			//WriteLog("\n<<<<<<<< " + stackLogTick + "\t" + DoublePassValues.Count + "\t" + prvConditionStatement);
 			string stkMsg = String.Empty;
@@ -171,8 +150,7 @@ namespace ExceptionDetectorUpdated
 			bool singlePass = false;
 			if(!doublePass)
 				singlePass = CheckPass(condition, SinglePassValues); 
-				//condition.Contains(MODMAN) || condition.Contains(TOOLBAR) || condition.Contains(CONTRACTTYPE) || condition.Contains(CONTRACTAGENTTYPE) || condition.Contains(CONTRACTGROUPTYPE) || condition.Contains(KOSTYPE) || condition.Contains(CONTRACTCONFIGTYPE) || condition.Contains(FILTEREXTTYPE) || condition.Contains(CONTRACTORBITTYPE);
-
+		
 			if (doublePass)
 			{
 				// WriteLog(stackTrace);

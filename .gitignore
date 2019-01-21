@@ -1,8 +1,8 @@
 *.orig
 *.dll
 *.userprefs
-src/ExceptionDetectorUpdated/bin/*
-src/ExceptionDetectorUpdated/obj/*
+src/ExceptionDetectorUpdated/bin
+src/ExceptionDetectorUpdated/obj
 Release/
 *.suo
 *.csproj.user
