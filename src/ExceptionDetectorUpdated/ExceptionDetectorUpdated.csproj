@@ -54,12 +54,15 @@
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>$(ProjectDir)..\..\..\pdb2mdb\pdb2mdb.exe $(TargetPath)
-copy /y $(TargetDir)ExceptionDetector* $(ProjectDir)..\..\..\GameData\ExceptionDetectorUpdated\
+copy /y $(TargetDir)ExceptionDetector* $(ProjectDir)..\..\..\GameData\ExceptionDetectorUpdated\ 
 
 copy /y $(ProjectDir)settings.cfg $(ProjectDir)..\..\..\GameData\ExceptionDetectorUpdated\
 copy /y $(ProjectDir)..\LICENSE.md $(ProjectDir)..\..\..\GameData\ExceptionDetectorUpdated\
 copy /y $(ProjectDir)..\UNLICENSE $(ProjectDir)..\..\..\GameData\ExceptionDetectorUpdated\
 copy /y $(ProjectDir)..\README.md $(ProjectDir)..\..\..\GameData\ExceptionDetectorUpdated\
-copy /y $(ProjectDir)..\CHANGES.txt $(ProjectDir)..\..\..\GameData\ExceptionDetectorUpdated\</PostBuildEvent>
+copy /y $(ProjectDir)..\CHANGES.txt $(ProjectDir)..\..\..\GameData\ExceptionDetectorUpdated\
+copy /y $(ProjectDir)ExceptionDetectorUpdated.version $(ProjectDir)..\..\..\GameData\ExceptionDetectorUpdated\
+
+if not exist "$(ProjectDir)..\..\..\GameData\ExceptionDetectorUpdated\Log" mkdir "$(ProjectDir)..\..\..\GameData\ExceptionDetectorUpdated\Log"</PostBuildEvent>
   </PropertyGroup>
 </Project>
