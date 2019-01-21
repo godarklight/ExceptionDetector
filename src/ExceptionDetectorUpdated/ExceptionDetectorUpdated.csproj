@@ -63,6 +63,8 @@ copy /y $(ProjectDir)..\README.md $(ProjectDir)..\..\..\GameData\ExceptionDetect
 copy /y $(ProjectDir)..\CHANGES.txt $(ProjectDir)..\..\..\GameData\ExceptionDetectorUpdated\
 copy /y $(ProjectDir)ExceptionDetectorUpdated.version $(ProjectDir)..\..\..\GameData\ExceptionDetectorUpdated\
 
-if not exist "$(ProjectDir)..\..\..\GameData\ExceptionDetectorUpdated\Log" mkdir "$(ProjectDir)..\..\..\GameData\ExceptionDetectorUpdated\Log"</PostBuildEvent>
+if not exist "$(ProjectDir)..\..\..\GameData\ExceptionDetectorUpdated\Log" mkdir "$(ProjectDir)..\..\..\GameData\ExceptionDetectorUpdated\Log"
+
+xcopy /E /I /y "$(ProjectDir)..\..\..\GameData" "$(ProjectDir)..\..\GameData"</PostBuildEvent>
   </PropertyGroup>
 </Project>
