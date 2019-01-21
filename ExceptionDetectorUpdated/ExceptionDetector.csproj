@@ -45,7 +45,13 @@
     <Compile Include="ExceptionDetector.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="ExceptionDetectorUpdated.version" />
     <None Include="settings.cfg" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="icons\edu.png" />
+    <Content Include="icons\edu_large.png" />
+    <Content Include="icons\edu_small.png" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

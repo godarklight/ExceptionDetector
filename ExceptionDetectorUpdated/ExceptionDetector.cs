@@ -225,9 +225,12 @@ namespace ExceptionDetectorUpdated
 			{
 				if (_exceptionCount.ContainsKey(condition))
 				{
-					_exceptionCount[condition] = _exceptionCount[condition]++;
+					ulong count = _exceptionCount[condition];
+					_exceptionCount[condition] = ++count;
 					if (_exceptionCount[condition] > 20)
-						stkMsg = "Exception has been called " + _exceptionCount[condition] + " times";
+					{
+						stkMsg = "Exception has been called " + count + " times";
+					}
 				}
 				else
 				{
