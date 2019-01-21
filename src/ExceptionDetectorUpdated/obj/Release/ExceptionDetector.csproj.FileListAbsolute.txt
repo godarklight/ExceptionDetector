@@ -1,6 +1,0 @@
-C:\Users\Lonnie\Desktop\Modding\ksp\ExceptionDetectorUpdated\ExceptionDetectorUpdated\bin\Release\ExceptionDetectorUpdated.dll
-C:\Users\Lonnie\Desktop\Modding\ksp\ExceptionDetectorUpdated\ExceptionDetectorUpdated\bin\Release\ExceptionDetectorUpdated.pdb
-C:\Users\Lonnie\Desktop\Modding\ksp\ExceptionDetectorUpdated\ExceptionDetectorUpdated\obj\Release\ExceptionDetector.csproj.CoreCompileInputs.cache
-C:\Users\Lonnie\Desktop\Modding\ksp\ExceptionDetectorUpdated\ExceptionDetectorUpdated\obj\Release\ExceptionDetectorUpdated.dll
-C:\Users\Lonnie\Desktop\Modding\ksp\ExceptionDetectorUpdated\ExceptionDetectorUpdated\obj\Release\ExceptionDetectorUpdated.pdb
-C:\Users\Lonnie\Desktop\Modding\ksp\ExceptionDetectorUpdated\ExceptionDetectorUpdated\obj\Release\ExceptionDetector.csprojAssemblyReference.cache
