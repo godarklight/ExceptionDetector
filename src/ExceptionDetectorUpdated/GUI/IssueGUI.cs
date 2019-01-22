@@ -20,7 +20,7 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
-
+using System.Linq;
 using UnityEngine;
 
 #endregion
@@ -34,8 +34,8 @@ namespace ExceptionDetectorUpdated
 		private GUIStyle buttonStyle;
 		private bool hasPositioned;
 		private List<string> message;
-		private int msgCount = 5;
-		private Rect position = new Rect(Screen.width, Screen.height, 0, 0);
+		private int msgCount = 20;
+		private Rect position = new Rect(Screen.width *.8f, Screen.height *.3f, 0, 0);
 		private string title;
 		private GUIStyle titleStyle;
 		private GUIStyle listStyle;
@@ -56,7 +56,6 @@ namespace ExceptionDetectorUpdated
 			{
 				DontDestroyOnLoad(this);
 				message = new List<string>();
-				message.Add("TOP 5 ISSUES");
 				for(int x = 1; x <= msgCount; x++)
 				{
 					message.Add(String.Format("{0}: ", x));
@@ -74,16 +73,27 @@ namespace ExceptionDetectorUpdated
 			//Logger.Log("FirstRunGui was destroyed.");
 		}
 
-		protected void OnGUI()
+		public void OnGUI()
 		{
 			try
 			{
 				this.position = GUILayout.Window(this.GetInstanceID(), this.position, this.Window, this.title, HighLogic.Skin.window);
 				this.PositionWindow();
+				UpdateMessages();
 			}
 			catch (Exception ex)
 			{
 				//Logger.Exception(ex);
+			}
+		}
+
+		private void UpdateMessages()
+		{
+			var list = ExceptionDetectorUpdated.ExceptionCount.ToList();
+			list.Sort((x, y) => y.Value.CompareTo(x.Value));
+			for (int x = 0; x < msgCount; x++)
+			{
+				message[x] = x > list.Count() ? String.Format("{0}", x + 1) : String.Format("{0}:  {1} times : {2}", x + 1, list[x].Value, list[x].Key);
 			}
 		}
 
@@ -111,7 +121,7 @@ namespace ExceptionDetectorUpdated
 			{
 				return;
 			}
-			this.position.center = new Vector2(Screen.width * 0.75f, Screen.height * 0.5f);
+			this.position.center = new Vector2(Screen.width * 0.75f, Screen.height *.25f);
 			this.hasPositioned = true;
 		}
 
@@ -153,17 +163,21 @@ namespace ExceptionDetectorUpdated
 		{
 			try
 			{
+				GUILayout.MaxHeight(Screen.height * .65f);
 				GUILayout.BeginVertical(HighLogic.Skin.box);
-				GUILayout.Label("TOP 5 ISSUES", this.titleStyle, GUILayout.Width(Screen.width * 0.2f));
-				for (int x = 1; x <= msgCount; x++)
+				GUILayout.Label(String.Format("TOP {0} ISSUES", msgCount), this.titleStyle, GUILayout.Width(Screen.width * 0.2f));
+				for (int x = 0; x < msgCount; x++)
 				{
 					GUILayout.Label(message[x], this.listStyle, GUILayout.Width(Screen.width * 0.2f));
 				}
 				GUILayout.EndVertical();
+				GUILayout.FlexibleSpace();
+				//GUILayout.
 				if (GUILayout.Button("CLOSE", this.buttonStyle))
 				{
 					Destroy(this);
 				}
+				
 				GUI.DragWindow();
 			}
 			catch (Exception ex)

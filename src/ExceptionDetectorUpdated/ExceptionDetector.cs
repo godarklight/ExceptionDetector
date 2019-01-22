@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using System.Text;
+using System.Linq;
 using UnityEngine;
 
 namespace ExceptionDetectorUpdated
@@ -33,13 +34,14 @@ namespace ExceptionDetectorUpdated
 		internal static Dictionary<string, string> SinglePassValues = new Dictionary<string, string>();
 		internal static Dictionary<string, string> DoublePassValues = new Dictionary<string, string>();
 		private static Dictionary<string, HashSet<string>> _errors = new Dictionary<string, HashSet<string>>();
-		private static Dictionary<string, ulong> _exceptionCount = new Dictionary<string, ulong>();
+		internal static Dictionary<string, ulong> ExceptionCount = new Dictionary<string, ulong>();
 		private static string prvConditionStatement = String.Empty;
-		
+
 		private static readonly string _assemblyPath = Path.GetDirectoryName(typeof(ExceptionDetectorUpdated).Assembly.Location);
 		internal static String SettingsFile { get; } = Path.Combine(_assemblyPath, "settings.cfg");
 		internal static String LogFile { get; } = Path.Combine(_assemblyPath, "Log/edu.log");
 		private IssueGUI fiGui;
+		public static ExceptionDetectorUpdated Instance { get; private set; }
 		#endregion
 
 		#region Properties
@@ -142,6 +144,7 @@ namespace ExceptionDetectorUpdated
 				//Random number
 				windowRect = GUILayout.Window(1660952404, windowRect, DrawMethod, "Exception Detector", expandOptions);
 			}
+			if (fiGui != null) fiGui.OnGUI();
 		}
 
 		private void DrawMethod(int windowID)
@@ -174,13 +177,15 @@ namespace ExceptionDetectorUpdated
 			bool doublePass = CheckPass(condition, DoublePassValues);
 			bool singlePass = false;
 			if(!doublePass)
-				singlePass = CheckPass(condition, SinglePassValues); 
-		
+				singlePass = CheckPass(condition, SinglePassValues);
+
 			if (doublePass)
 			{
 				// WriteLog(stackTrace);
 				// save it
 				preStack = condition;
+				if (logType != LogType.Log)
+					AddException(CleanCondition(condition));
 				stackLogTick = 1;
 				if (!HideKnowns)
 				{
@@ -198,50 +203,44 @@ namespace ExceptionDetectorUpdated
 			{
 				logTheMessage(condition, stackTrace, logType);
 			}
-			if (logType == LogType.Error || logType == LogType.Warning)
+			else if (logType == LogType.Error || logType == LogType.Warning)
 			{
 				//WriteLog(logType.ToString() + " : " + stackLogTick + " : " + condition);
 				if (stackLogTick == 1)
 				{
 					prvConditionStatement = condition;
 
-					condition = CleanCondition(condition);
-
-					WriteLog("*EDU*\t" + preStack + "--> " + condition + "\n");
+					string strMessage = "*EDU*\t" + preStack + "--> " + CleanCondition(condition) + "\n";
+					WriteLog(strMessage);
+					AddException(strMessage);
 					stackLogTick = 0;
 					preStack = String.Empty;
 				}
 				else if (singlePass)
 				{
 					WriteLog("*EDU*\t" + condition + "\n");
+					AddException(CleanCondition(condition));
 				}
 				else if (stackLogTick == 0 && !condition.Equals(prvConditionStatement))
 				{
 					logTheMessage(condition, stackTrace, logType);
 					WriteLog(stackTrace);
 					WriteLog("\n");
+					AddException(CleanCondition(condition));
 				}
 
-				// handle partloader errors
 			}
 			else if (logType == LogType.Exception)
 			{
-				if (_exceptionCount.ContainsKey(condition))
+				stkMsg = stackTrace;
+				if (ExceptionCount[CleanCondition(condition)] > 20)
 				{
-					ulong count = _exceptionCount[condition];
-					_exceptionCount[condition] = ++count;
-					if (_exceptionCount[condition] > 20)
-					{
-						stkMsg = "Exception has been called " + count + " times";
-					}
-				}
-				else
-				{
-					_exceptionCount.Add(condition, 1);
-					stkMsg = stackTrace;
+					stkMsg = "Exception has been called " + ExceptionCount[CleanCondition(condition)] + " times";
 				}
 				logTheMessage(condition, stkMsg, "**EDU-Exception");
 				WriteLog("EDU-EXCEPTION****\n\n\n");
+				AddException(CleanCondition(condition));
+				ExceptionDetectorUpdated.Instance.OnGUI();
 				using (StringReader sr = new StringReader(stackTrace))
 				{
 					StackInfo firstInfo = null;
@@ -280,7 +279,22 @@ namespace ExceptionDetectorUpdated
 				}
 				throwTime.Enqueue(Time.realtimeSinceStartup);
 			}
+
+			ExceptionDetectorUpdated.Instance.OnGUI();
 			//WriteLog(">>>>>>>>\n");
+		}
+
+		private static void AddException(string strMessage)
+		{
+			if (ExceptionCount.ContainsKey(strMessage))
+			{
+				ulong count = ExceptionCount[strMessage];
+				ExceptionCount[strMessage] = ++count;
+			}
+			else
+			{
+				ExceptionCount.Add(strMessage, 1);
+			}
 		}
 
 		private static bool CheckPass(string condition, Dictionary<string, string> passValues)
