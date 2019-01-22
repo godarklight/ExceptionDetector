@@ -42,6 +42,7 @@ namespace ExceptionDetectorUpdated
 		internal static String LogFile { get; } = Path.Combine(_assemblyPath, "Log/edu.log");
 		private IssueGUI fiGui;
 		public static ExceptionDetectorUpdated Instance { get; private set; }
+		internal static string strMessage = String.Empty;
 		#endregion
 
 		#region Properties
@@ -52,6 +53,7 @@ namespace ExceptionDetectorUpdated
 
 		public void Awake()
 		{
+			Instance = this;
 			InitLog();
 			Config.Load();
 			DontDestroyOnLoad(this);
@@ -134,17 +136,23 @@ namespace ExceptionDetectorUpdated
 
 		public void OnGUI()
 		{
-			//Update the state string every 0.2s so we can read it.
-			if (Event.current.type == EventType.Layout)
+			try
 			{
-				UpdateDisplayString();
-			}
-			if (displayState != null)
+				if (fiGui != null) fiGui.OnGUI();
+				//Update the state string every 0.2s so we can read it.
+				if (Event.current.type == EventType.Layout)
+				{
+					UpdateDisplayString();
+				}
+				if (displayState != null)
+				{
+					//Random number
+					//windowRect = GUILayout.Window(1660952404, windowRect, DrawMethod, "Exception Detector", expandOptions);
+				}
+			}catch(Exception ex)
 			{
-				//Random number
-				windowRect = GUILayout.Window(1660952404, windowRect, DrawMethod, "Exception Detector", expandOptions);
+				WriteLog(ex.ToString());
 			}
-			if (fiGui != null) fiGui.OnGUI();
 		}
 
 		private void DrawMethod(int windowID)
@@ -210,7 +218,7 @@ namespace ExceptionDetectorUpdated
 				{
 					prvConditionStatement = condition;
 
-					string strMessage = "*EDU*\t" + preStack + "--> " + CleanCondition(condition) + "\n";
+					strMessage = "*EDU*\t" + preStack + "--> " + CleanCondition(condition) + "\n";
 					WriteLog(strMessage);
 					AddException(strMessage);
 					stackLogTick = 0;
@@ -232,68 +240,85 @@ namespace ExceptionDetectorUpdated
 			}
 			else if (logType == LogType.Exception)
 			{
-				stkMsg = stackTrace;
-				if (ExceptionCount[CleanCondition(condition)] > 20)
+				try
 				{
-					stkMsg = "Exception has been called " + ExceptionCount[CleanCondition(condition)] + " times";
+					stkMsg = stackTrace;
+					if (!String.IsNullOrEmpty(condition) &&  ExceptionCount.ContainsKey(CleanCondition(condition)) && ExceptionCount[CleanCondition(condition)] > 20)
+					{
+						ulong ct = ExceptionCount[CleanCondition(condition)];
+						stkMsg = "Exception has been called " + ++ct + " times";
+						ExceptionCount[CleanCondition(condition)] = ct;
+					}
+					else
+					{
+						AddException(CleanCondition(condition));
+					}
+					logTheMessage(condition, stkMsg, "**EDU-Exception");
+					WriteLog("EDU-EXCEPTION****\n\n\n");
+
+					//ExceptionDetectorUpdated.Instance.OnGUI();
+					using (StringReader sr = new StringReader(stackTrace))
+					{
+						StackInfo firstInfo = null;
+						StackInfo stackInfo = null;
+						bool foundMod = false;
+						string currentLine = sr.ReadLine();
+						while (!foundMod && currentLine != null)
+						{
+							stackInfo = GetStackInfo(currentLine);
+							if (firstInfo == null)
+							{
+								firstInfo = stackInfo;
+							}
+							if (stackInfo.isMod)
+							{
+								//We found a mod in the trace, let's blame them.
+								foundMod = true;
+								break;
+							}
+							currentLine = sr.ReadLine();
+						}
+						if (!foundMod)
+						{
+							//If we didn't find a mod, blame the method that threw.
+							stackInfo = firstInfo;
+						}
+						if (!methodThrows.ContainsKey(stackInfo.dllName))
+						{
+							methodThrows.Add(stackInfo.dllName, new Dictionary<StackInfo, int>());
+						}
+						if (!methodThrows[stackInfo.dllName].ContainsKey(stackInfo))
+						{
+							methodThrows[stackInfo.dllName].Add(stackInfo, 0);
+						}
+						methodThrows[stackInfo.dllName][stackInfo]++;
+					}
+					throwTime.Enqueue(Time.realtimeSinceStartup);
 				}
-				logTheMessage(condition, stkMsg, "**EDU-Exception");
-				WriteLog("EDU-EXCEPTION****\n\n\n");
-				AddException(CleanCondition(condition));
-				ExceptionDetectorUpdated.Instance.OnGUI();
-				using (StringReader sr = new StringReader(stackTrace))
+				catch (Exception ex)
 				{
-					StackInfo firstInfo = null;
-					StackInfo stackInfo = null;
-					bool foundMod = false;
-					string currentLine = sr.ReadLine();
-					while (!foundMod && currentLine != null)
-					{
-						stackInfo = GetStackInfo(currentLine);
-						if (firstInfo == null)
-						{
-							firstInfo = stackInfo;
-						}
-						if (stackInfo.isMod)
-						{
-							//We found a mod in the trace, let's blame them.
-							foundMod = true;
-							break;
-						}
-						currentLine = sr.ReadLine();
-					}
-					if (!foundMod)
-					{
-						//If we didn't find a mod, blame the method that threw.
-						stackInfo = firstInfo;
-					}
-					if (!methodThrows.ContainsKey(stackInfo.dllName))
-					{
-						methodThrows.Add(stackInfo.dllName, new Dictionary<StackInfo, int>());
-					}
-					if (!methodThrows[stackInfo.dllName].ContainsKey(stackInfo))
-					{
-						methodThrows[stackInfo.dllName].Add(stackInfo, 0);
-					}
-					methodThrows[stackInfo.dllName][stackInfo]++;
+					WriteLog(ex.ToString());
 				}
-				throwTime.Enqueue(Time.realtimeSinceStartup);
 			}
 
-			ExceptionDetectorUpdated.Instance.OnGUI();
+			//ExceptionDetectorUpdated.Instance.OnGUI();
 			//WriteLog(">>>>>>>>\n");
 		}
 
-		private static void AddException(string strMessage)
+		private static void AddException(String strMessage)
 		{
-			if (ExceptionCount.ContainsKey(strMessage))
+
+			if (!String.IsNullOrEmpty(strMessage))
 			{
-				ulong count = ExceptionCount[strMessage];
-				ExceptionCount[strMessage] = ++count;
-			}
-			else
-			{
-				ExceptionCount.Add(strMessage, 1);
+				if (ExceptionCount.ContainsKey(strMessage))
+				{
+					ulong count = ExceptionCount[strMessage];
+					ExceptionCount[strMessage] = ++count;
+				}
+				else
+				{
+					ExceptionCount.Add(strMessage, 1);
+				}
 			}
 		}
 
@@ -331,89 +356,97 @@ namespace ExceptionDetectorUpdated
 
 		public static StackInfo GetStackInfo(string stackLine)
 		{
+
+			StackInfo unknownVal = new StackInfo { dllName = "Unknown", className = String.Empty };
 			StackInfo retVal = new StackInfo();
-			if (stackLine.StartsWith("UnityEngine.") || stackLine.StartsWith("KSPAssets."))
-				return retVal;
-
-			if (classCache.ContainsKey(stackLine))
-			{
-				return classCache[stackLine];
-			}
-
-			string processLine = null;
 			try
 			{
-				processLine = stackLine.Substring(0, stackLine.LastIndexOf(" ("));
-			}
-			catch (ArgumentOutOfRangeException oor)
-			{
+				if (stackLine.StartsWith("UnityEngine.") || stackLine.StartsWith("KSPAssets."))
+					return retVal;
 
-			}
-
-			string methodName = processLine.Substring(processLine.LastIndexOf(".") + 1);
-			processLine = processLine.Substring(0, processLine.Length - (methodName.Length + 1));
-			if (processLine.Contains("["))
-			{
-				processLine = processLine.Substring(0, processLine.IndexOf("["));
-			}
-			//UNITY WHY DO YOU HAVE TO BE SO BAD
-			//Type foundType = Type.GetType(processLine);
-			Type foundType = null;
-			foreach (Assembly testAssembly in AppDomain.CurrentDomain.GetAssemblies())
-			{
-				foreach (Type testType in testAssembly.GetExportedTypes())
+				if (classCache.ContainsKey(stackLine))
 				{
-					if (testType.FullName == processLine)
+					return classCache[stackLine];
+				}
+
+				string processLine = null;
+				try
+				{
+					processLine = stackLine.Substring(0, stackLine.LastIndexOf(" ("));
+				}
+				catch (ArgumentOutOfRangeException oor)
+				{
+
+				}
+
+				string methodName = processLine.Substring(processLine.LastIndexOf(".") + 1);
+				processLine = processLine.Substring(0, processLine.Length - (methodName.Length + 1));
+				if (processLine.Contains("["))
+				{
+					processLine = processLine.Substring(0, processLine.IndexOf("["));
+				}
+				//UNITY WHY DO YOU HAVE TO BE SO BAD
+				//Type foundType = Type.GetType(processLine);
+				Type foundType = null;
+				foreach (Assembly testAssembly in AppDomain.CurrentDomain.GetAssemblies())
+				{
+					foreach (Type testType in testAssembly.GetExportedTypes())
 					{
-						foundType = testType;
+						if (testType.FullName == processLine)
+						{
+							foundType = testType;
+							break;
+						}
+					}
+					if (foundType != null)
+					{
 						break;
 					}
 				}
 				if (foundType != null)
 				{
-					break;
-				}
-			}
-			if (foundType != null)
-			{
-				string dllPath = foundType.Assembly.Location;
-				retVal.dllName = Path.GetFileNameWithoutExtension(dllPath);
-				if (!dllPath.ToLower().Contains("gamedata"))
-				{
-					retVal.isMod = false;
-					if (retVal.dllName.ToLower() == "mscorelib")
+					string dllPath = foundType.Assembly.Location;
+					retVal.dllName = Path.GetFileNameWithoutExtension(dllPath);
+					if (!dllPath.ToLower().Contains("gamedata"))
 					{
-						retVal.dllName = "Mono";
+						retVal.isMod = false;
+						if (retVal.dllName.ToLower() == "mscorelib")
+						{
+							retVal.dllName = "Mono";
+						}
+						if (unityDlls.Contains(retVal.dllName.ToLower()))
+						{
+							retVal.dllName = "Unity";
+						}
+						if (kspDlls.Contains(retVal.dllName.ToLower()))
+						{
+							retVal.dllName = "KSP";
+						}
 					}
-					if (unityDlls.Contains(retVal.dllName.ToLower()))
+					retVal.namespaceName = foundType.Namespace;
+					retVal.className = foundType.Name;
+					if (retVal.className.Contains("`"))
 					{
-						retVal.dllName = "Unity";
+						retVal.className = retVal.className.Substring(0, retVal.className.IndexOf("`"));
 					}
-					if (kspDlls.Contains(retVal.dllName.ToLower()))
-					{
-						retVal.dllName = "KSP";
-					}
+					retVal.methodName = methodName;
+					classCache.Add(stackLine, retVal);
+					return retVal;
 				}
-				retVal.namespaceName = foundType.Namespace;
-				retVal.className = foundType.Name;
-				if (retVal.className.Contains("`"))
-				{
-					retVal.className = retVal.className.Substring(0, retVal.className.IndexOf("`"));
-				}
-				retVal.methodName = methodName;
-				classCache.Add(stackLine, retVal);
-				return retVal;
-			}
-			StackInfo unknownVal = new StackInfo { dllName = "Unknown", className = processLine };
 
-			if (unknownVal.className.Contains("`"))
-			{
-				unknownVal.className = unknownVal.className.Substring(0, unknownVal.className.IndexOf("`"));
-			}
 
-			unknownVal.methodName = methodName;
-			classCache.Add(stackLine, unknownVal);
-			return unknownVal;
+				if (unknownVal.className.Contains("`"))
+				{
+					unknownVal.className = unknownVal.className.Substring(0, unknownVal.className.IndexOf("`"));
+				}
+
+				unknownVal.methodName = methodName;
+				classCache.Add(stackLine, unknownVal);
+			}catch(Exception ex)
+			{
+				retVal = unknownVal;
+			}
+			return retVal;
 		}
 
 		public static void WriteLog(string strMessage)

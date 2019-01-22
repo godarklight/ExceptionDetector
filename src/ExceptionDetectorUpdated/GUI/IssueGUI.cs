@@ -22,6 +22,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Linq;
 using UnityEngine;
+using System.IO;
 
 #endregion
 
@@ -39,6 +40,8 @@ namespace ExceptionDetectorUpdated
 		private string title;
 		private GUIStyle titleStyle;
 		private GUIStyle listStyle;
+		private bool initDone = false;
+		private float lastFrameTime = 0.0f;
 
 		#endregion
 
@@ -77,9 +80,14 @@ namespace ExceptionDetectorUpdated
 		{
 			try
 			{
-				this.position = GUILayout.Window(this.GetInstanceID(), this.position, this.Window, this.title, HighLogic.Skin.window);
-				this.PositionWindow();
-				UpdateMessages();
+				if (!initDone)
+				{
+					InitialiseStyles();
+				}
+					this.position = GUILayout.Window(this.GetInstanceID(), this.position, this.Window, this.title, HighLogic.Skin.window);
+					this.PositionWindow();
+				
+				//UpdateMessages();
 			}
 			catch (Exception ex)
 			{
@@ -87,13 +95,25 @@ namespace ExceptionDetectorUpdated
 			}
 		}
 
+		private void Update()
+		{
+			//if (lastFrameTime < Time.time + (1 / 24f)) // 24fps
+			if (lastFrameTime < Time.time + 1)
+			{
+				lastFrameTime = Time.time;
+				UpdateMessages();
+			}
+		}
 		private void UpdateMessages()
 		{
-			var list = ExceptionDetectorUpdated.ExceptionCount.ToList();
-			list.Sort((x, y) => y.Value.CompareTo(x.Value));
-			for (int x = 0; x < msgCount; x++)
+			if (ExceptionDetectorUpdated.ExceptionCount.Count() > 2)
 			{
-				message[x] = x > list.Count() ? String.Format("{0}", x + 1) : String.Format("{0}:  {1} times : {2}", x + 1, list[x].Value, list[x].Key);
+				var list = ExceptionDetectorUpdated.ExceptionCount.ToList();
+				list.Sort((x, y) => y.Value.CompareTo(x.Value));
+				for (int x = 0; x < msgCount; x++)
+				{
+					message[x] = x >= list.Count() ? String.Format("{0}", x + 1) : String.Format("{0}:  {1} times : {2}", x + 1, list[x].Value, list[x].Key);
+				}
 			}
 		}
 
@@ -101,7 +121,6 @@ namespace ExceptionDetectorUpdated
 		{
 			try
 			{
-				this.InitialiseStyles();
 				this.title = "ExceptionDetectorUpdated - EDU";
 				// this.message = (this.HasBeenUpdated ? "You have successfully updated KSP-AVC to v" : "You have successfully installed KSP-AVC v") + this.version;
 			}
@@ -127,6 +146,7 @@ namespace ExceptionDetectorUpdated
 
 		private void InitialiseStyles()
 		{
+			initDone = true;
 			this.titleStyle = new GUIStyle(HighLogic.Skin.label)
 			{
 				normal =
@@ -166,6 +186,7 @@ namespace ExceptionDetectorUpdated
 				GUILayout.MaxHeight(Screen.height * .65f);
 				GUILayout.BeginVertical(HighLogic.Skin.box);
 				GUILayout.Label(String.Format("TOP {0} ISSUES", msgCount), this.titleStyle, GUILayout.Width(Screen.width * 0.2f));
+				GUILayout.Label(String.Format("More info availabe at {0}", Path.GetFullPath(ExceptionDetectorUpdated.LogFile)), this.titleStyle, GUILayout.Width(Screen.width * 0.2f)); 
 				for (int x = 0; x < msgCount; x++)
 				{
 					GUILayout.Label(message[x], this.listStyle, GUILayout.Width(Screen.width * 0.2f));
