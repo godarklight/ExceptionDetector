@@ -1,0 +1,71 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{4058D446-E39E-4183-AD88-7EDD83FD6DEC}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <RootNamespace>ExceptionDetectorUpdated</RootNamespace>
+    <AssemblyName>ExceptionDetectorUpdated</AssemblyName>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <ProductVersion>12.0.0</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug</OutputPath>
+    <DefineConstants>DEBUG;</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>false</ConsolePause>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>full</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>false</ConsolePause>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Assembly-CSharp">
+      <HintPath>..\..\..\..\..\..\..\..\Steam\steamapps\common\Kerbal Space Program\KSP_x64_Data\Managed\Assembly-CSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="UnityEngine">
+      <HintPath>..\..\..\..\..\..\..\..\Steam\steamapps\common\Kerbal Space Program\KSP_x64_Data\Managed\UnityEngine.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Config.cs" />
+    <Compile Include="ExceptionDetector.cs" />
+    <Compile Include="GUI\IssueGUI.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ExceptionDetectorUpdated.version" />
+    <None Include="settings.cfg" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="icons\edu.png" />
+    <Content Include="icons\edu_large.png" />
+    <Content Include="icons\edu_small.png" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>$(ProjectDir)..\..\..\pdb2mdb\pdb2mdb.exe $(TargetPath)
+copy /y $(TargetDir)ExceptionDetector* $(ProjectDir)..\..\..\GameData\ExceptionDetectorUpdated\ 
+
+copy /y $(ProjectDir)settings.cfg $(ProjectDir)..\..\..\GameData\ExceptionDetectorUpdated\
+copy /y $(ProjectDir)..\LICENSE.md $(ProjectDir)..\..\..\GameData\ExceptionDetectorUpdated\
+copy /y $(ProjectDir)..\UNLICENSE $(ProjectDir)..\..\..\GameData\ExceptionDetectorUpdated\
+copy /y $(ProjectDir)..\README.md $(ProjectDir)..\..\..\GameData\ExceptionDetectorUpdated\
+copy /y $(ProjectDir)..\CHANGES.txt $(ProjectDir)..\..\..\GameData\ExceptionDetectorUpdated\
+copy /y $(ProjectDir)ExceptionDetectorUpdated.version $(ProjectDir)..\..\..\GameData\ExceptionDetectorUpdated\
+
+if not exist "$(ProjectDir)..\..\..\GameData\ExceptionDetectorUpdated\Log" mkdir "$(ProjectDir)..\..\..\GameData\ExceptionDetectorUpdated\Log"
+
+xcopy /E /I /y "$(ProjectDir)..\..\..\GameData" "$(ProjectDir)..\..\GameData"</PostBuildEvent>
+  </PropertyGroup>
+</Project>
